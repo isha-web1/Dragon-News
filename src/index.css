@@ -5,3 +5,7 @@
   themes: light --default, dark --prefersdark, cupcake;
 }
 
+a.active {
+  background-color: rgb(130, 127, 127);
+}
+
