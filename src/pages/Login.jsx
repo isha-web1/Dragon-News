@@ -1,9 +1,12 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 
 const Login = () => {
   const {userLogin, setUser} = useContext(AuthContext)
+  const [error, setError] = useState({})
+  const location = useLocation();
+  const navigate = useNavigate()
   const handleSubmit = (e) =>{
     e.preventDefault();
     const form = e.target;
@@ -12,11 +15,12 @@ const Login = () => {
     console.log({email, password})
     userLogin(email, password)
     .then(result=>{
-      const user = result.user;
+      const user = result?.user;
       setUser(user)
+      navigate(location?.state ? location.state : '/')
     })
-    .catch((error) =>{
-      alert(error.code)
+    .catch((err) =>{
+      setError({...error, login:err.code})
     })
   }
   return (
@@ -30,7 +34,14 @@ const Login = () => {
             <label className="fieldset-label">Password</label>
             <input name="password" type="password" className="input" placeholder="Password" />
             <div>
-              <a className="link link-hover">Forgot password?</a>
+             <div>
+             {
+                error.login &&  (<label className="label text-sm text-red-600">{error.login}</label>)
+              }
+             </div>
+             <label className="label">
+               <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
+             </label>
             </div>
             <button className="btn btn-neutral mt-4">Login</button>
           </fieldset>
