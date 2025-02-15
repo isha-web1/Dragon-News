@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 
 const Register = () => {
   const [error,setError] = useState({})
-  const {createNewUser,  setUser} = useContext(AuthContext)
+  const navigate = useNavigate();
+  const {createNewUser,  setUser, updateUserProfile} = useContext(AuthContext)
   
   const handleSubmit = (e) =>{
        e.preventDefault();
@@ -12,23 +13,25 @@ const Register = () => {
       const form = new FormData(e.target);
       const name = form.get('name');
       const email = form.get('email');
+      const photo = form.get('photo')
       // const photo = form.get('photo');
       const password = form.get('password');
       if(password.length < 6){
         setError({...error, password : 'password must be more than 6 character long'})
         return;
       }
-      createNewUser(email,password)
+      createNewUser(email,password,photo)
       .then(result=>{
-        // console.log("Result from createNewUser:", result);
+       
        const user = result?.user;
        setUser(user)
-       console.log(user)
+       navigate(location?.state ? location.state : '/')
+       updateUserProfile({displayName : name, photoURL : photo}).then(()=>{navigate('/')}).catch(err =>{console.log(err)})
       })
       .catch((error) =>{
         const errorCode = error.code;
         const errorMessage = error.message
-        console.log(errorCode, errorMessage)
+        
       })
       
   
